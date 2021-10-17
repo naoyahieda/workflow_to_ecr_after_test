@@ -34,8 +34,8 @@ jobs:
           pip install flake8
           flake8
 
-  build-and-push:
-    name: BuildとPush
+  build-and-push-and-deploy:
+    name: BuildとPushとDeploy
     runs-on: ubuntu-18.04
     # masterブランチの時のみ
     if: github.ref == 'refs/heads/master'
@@ -79,7 +79,7 @@ jobs:
       - name: Pushの成功を通知する
         run: curl -X POST -H 'Content-type:application/json' --data '{"text":"'"${GITHUB_REPOSITORY}"'\n【FINISH】Pushed Image to ECR!!"}' ${{ secrets.SLACK_WEBHOOK }}
 
-      - name: Fill in the new image ID in the Amazon ECS task definition
+      - name: ECSタスク定義を変える？
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
@@ -87,7 +87,7 @@ jobs:
           container-name: githubactions
           image: ${{ steps.build-image.outputs.image }}
 
-      - name: Deploy Amazon ECS task definition
+      - name: タスク定義のものをデプロイする
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
