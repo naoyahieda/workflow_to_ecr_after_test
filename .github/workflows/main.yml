@@ -72,8 +72,7 @@ jobs:
           CONTAINER_REGISTRY_PATH: ${{ secrets.CONTAINER_REGISTRY_PATH }}
           IMAGE_NAME: app
         run: |
-          TAG=`echo $GITHUB_REF | sed 's/refs\/heads\///g'`
-          docker push ${CONTAINER_REGISTRY_PATH}/${IMAGE_NAME}:${TAG}
+          docker push ${CONTAINER_REGISTRY_PATH}/${IMAGE_NAME}:latest
 
       - name: Pushの成功を通知する
         run: curl -X POST -H 'Content-type:application/json' --data '{"text":"'"${GITHUB_REPOSITORY}"'\n【FINISH】Pushed Image to ECR!!"}' ${{ secrets.SLACK_WEBHOOK }}
