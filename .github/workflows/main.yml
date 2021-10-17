@@ -98,6 +98,6 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: githubactions
-          cluster: django-1
+          service: django-service
+          cluster: django
           wait-for-service-stability: true
