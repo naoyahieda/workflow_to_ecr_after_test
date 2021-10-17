@@ -62,8 +62,7 @@ jobs:
           CONTAINER_REGISTRY_PATH: ${{ secrets.CONTAINER_REGISTRY_PATH }}
           IMAGE_NAME: app
         run: |
-          TAG=`echo $GITHUB_REF | sed 's/refs\/heads\///g'`
-          docker build -t ${CONTAINER_REGISTRY_PATH}/${IMAGE_NAME}:${TAG} .
+          docker build -t ${CONTAINER_REGISTRY_PATH}/${IMAGE_NAME}:latest .
 
       - name: SlackにPushをはじめることを通知する
         run: curl -X POST -H 'Content-type:application/json' --data '{"text":"'"${GITHUB_REPOSITORY}"'\n【START】Push Image to ECR!!"}' ${{ secrets.SLACK_WEBHOOK }}
