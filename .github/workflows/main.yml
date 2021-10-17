@@ -53,7 +53,7 @@ jobs:
       - name: SlackにPushをはじめることを通知する
         run: curl -X POST -H 'Content-type:application/json' --data '{"text":"'"${GITHUB_REPOSITORY}"'\n【START】Push Image to ECR!!"}' ${{ secrets.SLACK_WEBHOOK }}
       
-        - name: ECRにPushする
+      - name: ECRにPushする
         env:
           CONTAINER_REGISTRY_PATH: ${{ secrets.CONTAINER_REGISTRY_PATH }}
           IMAGE_NAME: app
