@@ -76,3 +76,19 @@ jobs:
 
       - name: Pushの成功を通知する
         run: curl -X POST -H 'Content-type:application/json' --data '{"text":"'"${GITHUB_REPOSITORY}"'\n【FINISH】Pushed Image to ECR!!"}' ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: nginx
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: spot-ecs
+          cluster: spot-ecs
+          wait-for-service-stability: true
