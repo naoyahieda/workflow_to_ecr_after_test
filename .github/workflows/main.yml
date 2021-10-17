@@ -101,3 +101,5 @@ jobs:
           service: django-service
           cluster: django
           wait-for-service-stability: true
+          codedeploy-application: AppECS-django-django-service 
+          codedeploy-deployment-group: DgpECS-django-django-service
