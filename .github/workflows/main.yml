@@ -99,5 +99,5 @@ jobs:
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: githubactions
-          cluster: django
+          cluster: django-1
           wait-for-service-stability: true
