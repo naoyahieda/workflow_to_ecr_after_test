@@ -1,0 +1,65 @@
+on:
+  push:
+name: test-and-push-to-ecr-if-production-branch
+jobs:
+  test:
+    name: Djangoのテスト
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@master
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          version: '3.7'
+          architecture: 'x64'
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip pipenv pytest
+          pipenv install --system
+      # - name: Test with pytest
+        # run: python -m pytest -v
+
+  build:
+    name: BuildとPush
+    runs-on: ubuntu-18.04
+    # 
+    if: github.ref == 'refs/heads/master'
+    needs: [test]
+
+    steps:
+      - uses: actions/checkout@master
+      - name: AWS CLIを設定する。
+        uses: actions/setup-python@v1
+        with:
+          version: '3.7'
+          architecture: 'x64'
+      - name: Install awscli
+        run: pip install --upgrade pip awscli
+
+      - name: ECRにログインする
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: $(aws ecr get-login --no-include-email --region ap-northeast-1)
+
+      - name: DockerイメージをBuildする
+        env:
+          CONTAINER_REGISTRY_PATH: ${{ secrets.CONTAINER_REGISTRY_PATH }}
+          IMAGE_NAME: app
+        run: |
+          TAG=`echo $GITHUB_REF | sed 's/refs\/heads\///g'`
+          docker build -t ${CONTAINER_REGISTRY_PATH}/${IMAGE_NAME}:${TAG} .
+
+      - name: SlackにPushをはじめることを通知する
+        run: curl -X POST -H 'Content-type:application/json' --data '{"text":"'"${GITHUB_REPOSITORY}"'\n【START】Push Image to ECR!!"}' ${{ secrets.SLACK_WEBHOOK }}
+      
+        - name: ECRにPushする
+        env:
+          CONTAINER_REGISTRY_PATH: ${{ secrets.CONTAINER_REGISTRY_PATH }}
+          IMAGE_NAME: app
+        run: |
+          TAG=`echo $GITHUB_REF | sed 's/refs\/heads\///g'`
+          docker push ${CONTAINER_REGISTRY_PATH}/${IMAGE_NAME}:${TAG}
+      
+          - name: Pushの成功を通知する
+        run: curl -X POST -H 'Content-type:application/json' --data '{"text":"'"${GITHUB_REPOSITORY}"'\n【FINISH】Pushed Image to ECR!!"}' ${{ secrets.SLACK_WEBHOOK }}
