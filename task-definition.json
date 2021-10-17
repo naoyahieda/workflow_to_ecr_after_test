@@ -3,8 +3,8 @@
     "networkMode": "awsvpc",
     "containerDefinitions": [
       {
-        "name": "django",
-        "image": "django",
+        "name": "githubactions",
+        "image": "githubactions",
         "portMappings": [
           {
             "containerPort": 80,
