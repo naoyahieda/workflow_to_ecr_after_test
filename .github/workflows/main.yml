@@ -70,7 +70,7 @@ jobs:
       - name: ECRにPushする
         env:
           CONTAINER_REGISTRY_PATH: ${{ secrets.CONTAINER_REGISTRY_PATH }}
-          IMAGE_NAME: app
+          IMAGE_NAME: githubactions
         run: |
           docker push ${CONTAINER_REGISTRY_PATH}/${IMAGE_NAME}:latest
 
