@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-18.04
     # masterブランチの時のみ
     if: github.ref == 'refs/heads/master'
-    needs: [test]
+    needs: [django-test]
 
     steps:
       - uses: actions/checkout@master
